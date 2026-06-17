@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansan Station ANOOK Ryokan APP</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap');
+:root{
+  --bg:#faf7f2;
+  --bg2:#f3ede3;
+  --surface:#ffffff;
+  --surface2:#f8f3ec;
+  --border:rgba(139,100,60,0.12);
+  --border2:rgba(139,100,60,0.22);
+  --text:#2c1e0f;
+  --text-muted:#8a6e52;
+  --text-dim:#b8a08a;
+  --accent:#8b5e3c;
+  --accent2:#a0714f;
+  --accent-light:#f0e6d8;
+  --accent-glow:rgba(139,94,60,0.12);
+  --gold:#c9973a;
+  --gold-bg:rgba(201,151,58,0.1);
+  --green:#4a7c59;
+  --green-bg:rgba(74,124,89,0.1);
+  --red:#c0392b;
+  --red-bg:rgba(192,57,43,0.1);
+  --amber:#b8860b;
+  --amber-bg:rgba(184,134,11,0.1);
+  --blue:#2e6da4;
+  --blue-bg:rgba(46,109,164,0.1);
+  --card-a:linear-gradient(135deg,#3d2b1a 0%,#6b4226 100%);
+  --card-b:linear-gradient(135deg,#1a3028 0%,#2d5c42 100%);
+  --card-c:linear-gradient(135deg,#2a1a10 0%,#7a4020 100%);
+  --card-d:linear-gradient(135deg,#1e2a3a 0%,#2d4a6e 100%);
+  --radius:14px;--radius-sm:8px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+
+/* ── AUTH ── */
+.auth-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:
+    radial-gradient(ellipse at 20% 30%,rgba(139,94,60,0.08) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 70%,rgba(201,151,58,0.06) 0%,transparent 50%),
+    var(--bg);
+  padding:24px;
+}
+.auth-wrap{width:100%;max-width:440px;}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo img{width:200px;height:auto;object-fit:contain;filter:brightness(0.85) sepia(0.3);}
+.auth-logo-sub{font-size:18px;font-weight:700;color:var(--accent);margin-top:6px;letter-spacing:0.04em;font-family:"Noto Serif KR",serif;}
+.auth-card{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:32px;
+  box-shadow:0 4px 24px rgba(139,94,60,0.08);
+}
+.auth-tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--bg2);border-radius:var(--radius-sm);padding:4px;
+  margin-bottom:28px;gap:4px;
+}
+.auth-tab{
+  padding:9px;text-align:center;border-radius:6px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  color:var(--text-muted);transition:all 0.15s;border:none;background:none;font-family:inherit;
+}
+.auth-tab.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(139,94,60,0.12);}
+
+/* step indicator */
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px;}
+.step-dot{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;transition:all 0.3s;flex-shrink:0;
+}
+.step-dot.done{background:var(--green);color:#fff;}
+.step-dot.active{background:var(--accent);color:#fff;box-shadow:0 0 0 4px var(--accent-glow);}
+.step-dot.pending{background:var(--bg2);color:var(--text-dim);border:1px solid var(--border2);}
+.step-line{width:28px;height:2px;background:var(--border2);transition:background 0.3s;flex-shrink:0;}
+.step-line.done{background:var(--green);}
+.step-label-row{display:flex;justify-content:space-around;margin-top:6px;margin-bottom:18px;}
+.step-label{font-size:10px;color:var(--text-dim);text-align:center;width:60px;}
+.step-label.active{color:var(--accent);font-weight:600;}
+.step-label.done{color:var(--green);}
+
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeIn 0.2s ease;}
+.step-head{margin-bottom:18px;}
+.step-head-title{font-size:15px;font-weight:700;color:var(--text);}
+.step-head-sub{font-size:13px;color:var(--text-muted);margin-top:3px;}
+
+/* forms */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:5px;display:block;letter-spacing:0.05em;text-transform:uppercase;}
+.form-input,.form-select{
+  width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-size:14px;padding:10px 12px;font-family:inherit;outline:none;transition:border-color 0.15s;
+}
+.form-input:focus,.form-select:focus{border-color:var(--accent);background:var(--surface);}
+.form-input.err{border-color:var(--red);}
+.form-input.ok{border-color:var(--green);}
+.form-hint{font-size:12px;margin-top:4px;}
+.form-hint.err{color:var(--red);}
+.form-hint.ok{color:var(--green);}
+.form-hint.muted{color:var(--text-dim);}
+.form-row{display:flex;gap:10px;}
+.form-row .form-group{flex:1;}
+.pw-wrap{position:relative;}
+.pw-wrap .form-input{padding-right:40px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:15px;padding:2px;}
+
+/* phone row */
+.phone-row{display:flex;gap:8px;align-items:flex-start;}
+.phone-row .form-input{flex:1;min-width:0;}
+.btn-send{
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;flex-shrink:0;
+  height:42px;display:flex;align-items:center;
+}
+.btn-send:hover{background:var(--accent2);}
+.btn-send:disabled{opacity:0.45;cursor:not-allowed;}
+
+/* OTP code boxes — FIXED: use single input instead of 6 boxes */
+.otp-wrap{
+  display:flex;gap:6px;align-items:center;justify-content:center;
+  margin-bottom:8px;
+}
+.otp-single{
+  width:100%;text-align:center;font-size:22px;font-weight:700;letter-spacing:8px;
+  background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);padding:12px 16px;font-family:inherit;outline:none;transition:all 0.15s;
+}
+.otp-single:focus{border-color:var(--accent);background:var(--surface);}
+.otp-single.ok{border-color:var(--green);background:rgba(74,124,89,0.05);}
+.otp-single.err{border-color:var(--red);}
+
+.countdown{font-size:12px;font-weight:600;color:var(--amber);}
+.countdown.expired{color:var(--red);}
+
+/* pw strength */
+.pw-bars{display:flex;gap:4px;margin-top:6px;}
+.pw-bar{height:3px;border-radius:2px;flex:1;background:var(--bg2);transition:background 0.3s;}
+.pw-bar.weak{background:var(--red);}
+.pw-bar.medium{background:var(--amber);}
+.pw-bar.strong{background:var(--green);}
+
+/* buttons */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;
+  cursor:pointer;border:none;transition:all 0.15s;font-family:inherit;width:100%;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-outline{background:transparent;color:var(--text-muted);border:1px solid var(--border2);margin-top:8px;}
+.btn-outline:hover{background:var(--bg2);color:var(--text);}
+.btn-ghost{background:transparent;color:var(--accent);font-size:13px;padding:6px;width:auto;border:none;cursor:pointer;font-family:inherit;font-weight:600;}
+
+.auth-footer{text-align:center;margin-top:18px;font-size:13px;color:var(--text-muted);}
+.auth-footer a{color:var(--accent);cursor:pointer;}
+
+.success-wrap{text-align:center;padding:12px 0;}
+.success-icon{font-size:48px;margin-bottom:14px;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes pop{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
+
+.demo-box{
+  margin-top:16px;padding:12px;background:var(--bg2);border-radius:var(--radius-sm);
+  font-size:12px;color:var(--text-muted);border:1px solid var(--border);
+}
+.demo-box strong{color:var(--text);}
+
+/* ── APP SHELL ── */
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:230px;background:var(--accent);
+  display:flex;flex-direction:column;padding:0 0 20px;flex-shrink:0;
+  box-shadow:2px 0 12px rgba(139,94,60,0.15);
+}
+.sidebar-logo{
+  padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:8px;
+}
+.sidebar-logo img{width:150px;height:auto;filter:brightness(0) invert(1);opacity:0.92;}
+.sidebar-logo-sub{font-size:16px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:6px;letter-spacing:0.04em;font-family:"Noto Serif KR",serif;}
+.nav-group-label{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+  letter-spacing:0.1em;text-transform:uppercase;padding:14px 20px 4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 16px;margin:1px 10px;
+  border-radius:var(--radius-sm);cursor:pointer;color:rgba(255,255,255,0.75);
+  font-size:13.5px;font-weight:500;transition:all 0.15s;
+  border:none;background:none;width:calc(100% - 20px);text-align:left;font-family:inherit;
+}
+.nav-item:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,0.2);color:#fff;font-weight:600;}
+.nav-icon{font-size:15px;width:20px;text-align:center;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.topbar{
+  height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;padding:0 28px;background:var(--surface);
+  box-shadow:0 1px 4px rgba(139,94,60,0.06);
+}
+.page-title{font-size:16px;font-weight:700;color:var(--text);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.content{flex:1;overflow-y:auto;padding:28px;}
+
+/* panels */
+.panel{display:none;}
+.panel.active{display:block;animation:fadeIn 0.2s ease;}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;
+}
+.stat-label{font-size:12px;color:var(--text-muted);font-weight:500;margin-bottom:6px;}
+.stat-value{font-size:26px;font-weight:700;letter-spacing:-0.5px;}
+.stat-sub{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+.card-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:20px;box-shadow:0 1px 4px rgba(139,94,60,0.04);
+}
+.card-box-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);
+}
+.card-box-title{font-size:14px;font-weight:600;color:var(--text);}
+table{width:100%;border-collapse:collapse;}
+th{
+  text-align:left;font-size:11px;font-weight:600;color:var(--text-dim);
+  letter-spacing:0.06em;text-transform:uppercase;padding:11px 20px;
+  border-bottom:1px solid var(--border);background:var(--bg2);
+}
+td{padding:13px 20px;border-bottom:1px solid var(--border);font-size:13.5px;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.badge.green{background:var(--green-bg);color:var(--green);}
+.badge.amber{background:var(--amber-bg);color:var(--amber);}
+.badge.red{background:var(--red-bg);color:var(--red);}
+.badge.blue{background:var(--blue-bg);color:var(--blue);}
+.badge.gold{background:var(--gold-bg);color:var(--gold);}
+
+.app-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:inherit;
+}
+.btn-prim{background:var(--accent);color:#fff;}
+.btn-prim:hover{background:var(--accent2);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border2);}
+.btn-out:hover{background:var(--bg2);color:var(--text);}
+.btn-grn{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+.btn-xs{padding:5px 10px;font-size:11px;}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(44,30,15,0.5);display:none;align-items:center;justify-content:center;z-index:100;}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
+  width:480px;max-height:90vh;overflow-y:auto;padding:28px;
+  box-shadow:0 8px 32px rgba(139,94,60,0.2);
+}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:20px;color:var(--text);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+
+/* pass cards */
+.pass-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:24px;}
+.pass-card{
+  border-radius:16px;padding:22px;position:relative;overflow:hidden;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;min-height:160px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.pass-card:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(0,0,0,0.3);}
+.pass-card.exhausted{opacity:0.5;filter:grayscale(0.6);}
+.pass-card>*{position:relative;z-index:1;}
+.pass-card-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.pass-card-type{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.7;}
+.pass-card-id{font-size:10px;opacity:0.45;}
+.pass-card-amount{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:6px;color:#fff;}
+.pass-card-amount span{font-size:13px;font-weight:500;opacity:0.65;margin-left:2px;}
+.pass-card-footer{display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px;}
+.pass-pips{display:flex;gap:4px;flex-wrap:wrap;max-width:180px;}
+.pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.8);}
+.pip.used{background:rgba(255,255,255,0.18);}
+.pass-card-date{font-size:10px;opacity:0.5;text-align:right;}
+.pass-progress{height:3px;background:rgba(255,255,255,0.15);border-radius:2px;overflow:hidden;margin-top:8px;}
+.pass-progress-fill{height:100%;background:rgba(255,255,255,0.8);border-radius:2px;transition:width 0.4s;}
+
+/* timeline */
+.timeline{padding:4px 20px 16px;}
+.tl-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.tl-dot.use{background:var(--green);}
+.tl-dot.charge{background:var(--gold);}
+.tl-content{flex:1;}
+.tl-main{font-size:13.5px;font-weight:500;}
+.tl-sub{font-size:12px;color:var(--text-muted);margin-top:1px;}
+.tl-right{font-size:11px;color:var(--text-dim);text-align:right;white-space:nowrap;}
+
+/* search */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.search-input{
+  flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:9px 14px;
+  font-family:inherit;outline:none;
+}
+.search-input:focus{border-color:var(--accent);}
+
+/* customer header */
+.cust-header{
+  background:linear-gradient(135deg,var(--accent) 0%,#6b3a1f 100%);
+  border-radius:var(--radius);padding:24px;margin-bottom:22px;
+  display:flex;align-items:center;gap:20px;color:#fff;
+  box-shadow:0 4px 16px rgba(139,94,60,0.25);
+}
+.avatar{
+  width:54px;height:54px;border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;flex-shrink:0;color:#fff;
+}
+.cust-name{font-size:20px;font-weight:700;}
+.cust-meta{font-size:13px;opacity:0.75;margin-top:2px;}
+.section-title{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--text);}
+
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.chip-5{background:var(--blue-bg);color:var(--blue);}
+.chip-10{background:var(--gold-bg);color:var(--gold);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
+.empty-icon{font-size:36px;margin-bottom:10px;}
+
+.toast{
+  position:fixed;bottom:24px;right:24px;background:var(--surface);
+  border:1px solid var(--border2);border-left:3px solid var(--green);
+  border-radius:var(--radius-sm);padding:12px 18px;font-size:13px;font-weight:500;
+  z-index:200;opacity:0;transform:translateY(8px);transition:all 0.25s;pointer-events:none;
+  box-shadow:0 4px 16px rgba(139,94,60,0.15);color:var(--text);
+}
+.toast.show{opacity:1;transform:none;}
+
+.divider{height:1px;background:var(--border);margin:20px 0;}
+
+/* role badge in topbar */
+.role-badge{font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;border:none;font-family:inherit;}
+.role-admin{background:var(--accent-glow);color:var(--accent);border:1px solid var(--border2);}
+.role-cust{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+
+/* logout btn */
+.logout-btn{
+  margin:8px 10px 0;padding:9px 16px;border-radius:var(--radius-sm);
+  color:rgba(255,255,255,0.6);font-size:13px;background:none;border:1px solid rgba(255,255,255,0.15);
+  cursor:pointer;font-family:inherit;font-weight:500;width:calc(100% - 20px);text-align:left;
+  display:flex;align-items:center;gap:8px;transition:all 0.15s;
+}
+.logout-btn:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.sidebar-user{font-size:12px;color:rgba(255,255,255,0.55);padding:8px 20px 4px;}
+
+  .auth-logo-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .sidebar-logo-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+
+/* consent boxes */
+.consent-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+.consent-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.consent-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.consent-tag.req{background:var(--red-bg);color:var(--red);}
+.consent-tag.opt{background:var(--green-bg);color:var(--green);}
+.consent-body{font-size:11.5px;color:var(--text-muted);line-height:1.7;margin-bottom:10px;list-style:none;padding:0;}
+.consent-body li{margin-left:0;margin-bottom:2px;list-style:none;padding-left:0;}
+.consent-check{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 0;border-top:1px solid var(--border);}
+.consent-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.consent-check-label{font-size:13px;font-weight:600;color:var(--text);}
+.consent-check-label .req-mark{color:var(--red);margin-left:3px;}
+.consent-check-label .opt-mark{color:var(--green);margin-left:3px;}
+
+/* toggle switch */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);}
+.toggle-label-group{display:flex;flex-direction:column;gap:2px;}
+.toggle-main{font-size:14px;font-weight:600;color:var(--text);}
+.toggle-sub{font-size:12px;color:var(--text-muted);}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;background:var(--border2);border-radius:12px;cursor:pointer;transition:.3s;
+}
+.toggle-slider:before{
+  content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked+.toggle-slider{background:var(--green);}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(20px);}
+
+/* excel button */
+.btn-excel{background:rgba(74,124,89,0.12);color:var(--green);border:1px solid rgba(74,124,89,0.25);font-size:12px;}
+.btn-excel:hover{background:rgba(74,124,89,0.2);}
+
+/* marketing badge in table */
+.mkting-on{color:var(--green);font-size:12px;font-weight:600;}
+.mkting-off{color:var(--text-dim);font-size:12px;}
+
+
+/* admin login overlay */
+.admin-login-screen{
+  position:fixed;inset:0;background:rgba(44,30,15,0.85);
+  display:none;align-items:center;justify-content:center;z-index:300;
+  backdrop-filter:blur(4px);
+}
+.admin-login-screen.open{display:flex;}
+.admin-login-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:32px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(44,30,15,0.3);
+}
+.admin-login-logo{text-align:center;margin-bottom:24px;}
+.admin-login-logo-text{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--accent);line-height:1.3;}
+.admin-login-logo-sub{font-size:13px;color:var(--text-muted);margin-top:4px;}
+.admin-tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.05em;margin-top:6px;}
+
+
+/* member search dropdown */
+.member-search-wrap{position:relative;}
+.member-search-input{
+  width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-size:14px;padding:10px 12px 10px 36px;font-family:inherit;outline:none;
+  transition:border-color 0.15s;
+}
+.member-search-input:focus{border-color:var(--accent);background:var(--surface);}
+.member-search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;color:var(--text-dim);}
+.member-dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  box-shadow:0 8px 24px rgba(139,94,60,0.15);z-index:50;
+  max-height:240px;overflow-y:auto;display:none;
+}
+.member-dropdown.open{display:block;}
+.member-drop-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);
+  transition:background 0.1s;gap:12px;
+}
+.member-drop-item:last-child{border-bottom:none;}
+.member-drop-item:hover{background:var(--bg2);}
+.member-drop-item.selected{background:var(--accent-glow);}
+.mdi-name{font-size:14px;font-weight:600;color:var(--text);}
+.mdi-meta{font-size:11px;color:var(--text-muted);margin-top:1px;}
+.mdi-rem{font-size:12px;font-weight:600;color:var(--green);white-space:nowrap;flex-shrink:0;}
+.mdi-rem.zero{color:var(--red);}
+.member-selected-card{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;
+  margin-top:6px;
+}
+.msc-info{flex:1;}
+.msc-name{font-size:15px;font-weight:700;color:var(--text);}
+.msc-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.msc-rem{font-size:13px;font-weight:600;color:var(--green);}
+.msc-rem.zero{color:var(--red);}
+.msc-clear{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:2px 4px;line-height:1;}
+.msc-clear:hover{color:var(--red);}
+.member-drop-empty{padding:16px;text-align:center;color:var(--text-muted);font-size:13px;}
+
+
+/* restore modal */
+.restore-divider{
+  display:flex;align-items:center;gap:10px;margin:16px 0;
+}
+.restore-divider-line{flex:1;height:1px;background:var(--border2);}
+.restore-divider-text{font-size:11px;color:var(--text-dim);font-weight:600;letter-spacing:0.05em;white-space:nowrap;}
+
+.restore-box{
+  background:var(--amber-bg);border:1px solid rgba(184,134,11,0.25);
+  border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;
+}
+.restore-box-title{font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.restore-box-desc{font-size:12px;color:var(--text-muted);line-height:1.6;}
+
+.modal-pw-row{display:flex;gap:8px;align-items:flex-end;}
+.modal-pw-row .form-group{flex:1;margin-bottom:0;}
+.modal-pw-row .btn-verify-pw{
+  height:42px;padding:0 16px;background:var(--accent);color:#fff;border:none;
+  border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;white-space:nowrap;flex-shrink:0;transition:background 0.15s;
+}
+.modal-pw-row .btn-verify-pw:hover{background:var(--accent2);}
+.pw-verified-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--green-bg);color:var(--green);border:1px solid rgba(74,124,89,0.2);
+  border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px;margin-top:6px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH ══ -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="auth-logo-text">아늑료칸<br>안산역점</div>
+      <div class="auth-logo-sub">루프사우나</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">로그인</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">회원가입</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="auth-login">
+        <div class="form-group">
+          <label class="form-label">전화번호</label>
+          <input class="form-input" id="login-phone" placeholder="010-0000-0000" oninput="fmtPhone(this)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="login-pw" type="password" placeholder="비밀번호 입력">
+            <button class="pw-eye" onclick="togglePw('login-pw',this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()" style="margin-top:8px;">로그인</button>
+        <div class="auth-footer">계정이 없으신가요? <a onclick="switchTab('signup')">회원가입</a></div>
+        <div style="margin-top:16px;text-align:center;">
+          <button onclick="openAdminLogin()" style="background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline;">관리자 페이지</button>
+        </div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="auth-signup" style="display:none;">
+        <div class="step-indicator">
+          <div class="step-dot active" id="sd1">1</div>
+          <div class="step-line" id="sl1"></div>
+          <div class="step-dot pending" id="sd2">2</div>
+          <div class="step-line" id="sl2"></div>
+          <div class="step-dot pending" id="sd3">3</div>
+          <div class="step-line" id="sl3"></div>
+          <div class="step-dot pending" id="sd4">4</div>
+          <div class="step-line" id="sl4"></div>
+          <div class="step-dot pending" id="sd5">5</div>
+        </div>
+        <div class="step-label-row" style="justify-content:space-between;">
+          <div class="step-label active" id="sl-1" style="width:auto;font-size:9px;">기본정보</div>
+          <div class="step-label" id="sl-2" style="width:auto;font-size:9px;">본인인증</div>
+          <div class="step-label" id="sl-3" style="width:auto;font-size:9px;">동의</div>
+          <div class="step-label" id="sl-4" style="width:auto;font-size:9px;">비밀번호</div>
+          <div class="step-label" id="sl-5" style="width:auto;font-size:9px;">완료</div>
+        </div>
+
+        <!-- Step 1: 기본정보 -->
+        <div class="step-panel active" id="step-1">
+          <div class="step-head"><div class="step-head-title">기본 정보 입력</div><div class="step-head-sub">생년월일 · 이름 · 전화번호를 순서대로 입력해 주세요</div></div>
+
+          <div class="form-group">
+            <label class="form-label">생년월일 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="su-birth" type="date" onchange="chkBirth()" oninput="chkBirth()">
+            <div class="form-hint err" id="h-birth" style="display:none;">생년월일은 필수 입력 항목입니다</div>
+            <div class="form-hint ok" id="h-birth-ok" style="display:none;">✓ 확인됨</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">이름 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="su-name" placeholder="홍길동" oninput="chkName()">
+            <div class="form-hint muted" id="h-name">실명을 입력해 주세요</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">전화번호 <span style="color:var(--red)">*</span></label>
+            <div class="phone-row">
+              <input class="form-input" id="su-phone" placeholder="010-0000-0000" oninput="fmtPhone(this);chkPhone()">
+              <button class="btn-send" id="btn-send" onclick="sendCode()" disabled>인증번호 전송</button>
+            </div>
+            <div class="form-hint muted" id="h-phone">전화번호 입력 후 인증번호를 전송하세요</div>
+          </div>
+
+          <div id="phone-verified-notice" style="display:none;background:var(--green-bg);border:1px solid rgba(74,124,89,0.25);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;font-size:13px;font-weight:600;color:var(--green);">
+            ✓ 전화번호 인증이 완료되었습니다
+          </div>
+
+          <button class="btn btn-primary" id="btn-next1" disabled onclick="tryGoStep2()">다음 단계</button>
+        </div>
+
+        <!-- Step 2: 본인인증 -->
+        <div class="step-panel" id="step-2">
+          <div class="step-head"><div class="step-head-title">전화번호 인증</div><div class="step-head-sub" id="sent-to-label">입력한 번호로 인증번호를 전송했습니다</div></div>
+          <div class="form-group">
+            <label class="form-label">인증번호 6자리</label>
+            <input class="otp-single" id="otp-input" maxlength="6" placeholder="000000" oninput="onOtp()" inputmode="numeric">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <div class="form-hint" id="h-otp" style="margin:0;"></div>
+              <div class="countdown" id="countdown"></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <span style="font-size:13px;color:var(--text-muted);">인증번호를 받지 못하셨나요?</span>
+            <button class="btn-ghost" onclick="resendCode()">재전송</button>
+          </div>
+          <button class="btn btn-primary" id="btn-verify" onclick="verifyCode()" disabled>인증 확인</button>
+          <button class="btn btn-outline" onclick="goStepRaw(1)">이전</button>
+        </div>
+
+        <!-- Step 3: 동의 -->
+        <div class="step-panel" id="step-3">
+          <div class="step-head"><div class="step-head-title">서비스 이용 동의</div><div class="step-head-sub">아래 내용을 확인하고 동의해 주세요</div></div>
+
+          <div class="consent-box">
+            <div class="consent-title">📢 개인정보 수집 · 이용 동의 <span class="consent-tag req">필수</span></div>
+            <div class="consent-body">
+              <div>· 수집 항목: 이름, 전화번호, 생년월일</div>
+              <div>· 수집 목적: 회차권 적립, 방문 확인 및 이용권 발급</div>
+              <div>· 보유 기간: 서비스 종료 또는 동의 철회 시까지</div>
+              <div>· 거부 권리: 동의를 거부할 수 있으나 서비스 이용이 제한됩니다.</div>
+            </div>
+            <label class="consent-check">
+              <input type="checkbox" id="chk-privacy" onchange="chkConsent()">
+              <span class="consent-check-label">개인정보 수집 · 이용에 동의합니다.<span class="req-mark">(필수)</span></span>
+            </label>
+          </div>
+
+          <div class="consent-box">
+            <div class="consent-title">📢 마케팅 정보 수신 동의 <span class="consent-tag opt">선택</span></div>
+            <div class="consent-body">
+              <div>· 수신 방법: 문자(SMS)</div>
+              <div>· 이용 목적: 이벤트, 프로모션, 쿠폰 및 혜택 정보 안내</div>
+              <div>· 보유 기간: 동의 철회 시까지</div>
+              <div>· 거부 권리: 동의를 거부할 수 있으며, 일부 이벤트 및 프로모션 혜택 안내가 제한될 수 있습니다.</div>
+            </div>
+            <label class="consent-check">
+              <input type="checkbox" id="chk-marketing" onchange="chkConsent()">
+              <span class="consent-check-label">광고성 정보 및 혜택 안내 수신에 동의합니다.<span class="opt-mark">(선택)</span></span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary" id="btn-next3" onclick="goStepRaw(4)" disabled>다음 단계</button>
+          <button class="btn btn-outline" onclick="goStepRaw(2)">이전</button>
+        </div>
+
+        <!-- Step 4: 비밀번호 -->
+        <div class="step-panel" id="step-4">
+          <div class="step-head"><div class="step-head-title">비밀번호 설정</div><div class="step-head-sub">8자 이상, 영문+숫자 조합을 권장합니다</div></div>
+          <div class="form-group">
+            <label class="form-label">비밀번호 <span style="color:var(--red)">*</span></label>
+            <div class="pw-wrap">
+              <input class="form-input" id="su-pw" type="password" placeholder="8자 이상" oninput="chkPw()">
+              <button class="pw-eye" onclick="togglePw('su-pw',this)" tabindex="-1">👁</button>
+            </div>
+            <div class="pw-bars"><div class="pw-bar" id="pb1"></div><div class="pw-bar" id="pb2"></div><div class="pw-bar" id="pb3"></div></div>
+            <div class="form-hint muted" id="h-pw" style="margin-top:5px;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호 확인 <span style="color:var(--red)">*</span></label>
+            <div class="pw-wrap">
+              <input class="form-input" id="su-pw2" type="password" placeholder="동일하게 입력" oninput="chkPw2()">
+              <button class="pw-eye" onclick="togglePw('su-pw2',this)" tabindex="-1">👁</button>
+            </div>
+            <div class="form-hint" id="h-pw2"></div>
+          </div>
+          <button class="btn btn-primary" id="btn-signup" onclick="doSignup()" disabled>가입 완료</button>
+          <button class="btn btn-outline" onclick="goStepRaw(3)">이전</button>
+        </div>
+
+        <!-- Step 5: 완료 -->
+        <div class="step-panel" id="step-5">
+          <div class="success-wrap">
+            <div class="success-icon">🎉</div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">가입 완료!</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;" id="success-msg"></div>
+            <button class="btn btn-primary" onclick="afterSignup()">서비스 시작하기</button>
+          </div>
+        </div>
+      </div><!-- /auth-signup -->
+    </div><!-- /auth-card -->
+  </div>
+</div><!-- /auth-screen -->
+
+<!-- ══ ADMIN APP ══ -->
+<div class="shell" id="app-admin" style="display:none;">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">아늑료칸<br>안산역점</div>
+      <div class="sidebar-logo-sub">루프사우나</div>
+    </div>
+    <div class="nav-group-label">관리자</div>
+    <button class="nav-item active" onclick="showAdminPanel('dashboard',this)"><span class="nav-icon">📊</span>대시보드</button>
+    <button class="nav-item" onclick="showAdminPanel('members',this)"><span class="nav-icon">👥</span>회원 관리</button>
+    <button class="nav-item" onclick="showAdminPanel('charge',this)"><span class="nav-icon">💳</span>회차권 충전</button>
+    <button class="nav-item" onclick="showAdminPanel('deduct',this)"><span class="nav-icon">✂️</span>회차 차감</button>
+    <button class="nav-item" onclick="showAdminPanel('history',this)"><span class="nav-icon">📋</span>전체 내역</button>
+    <div style="margin-top:auto;">
+      <div class="sidebar-user" id="admin-user-label">관리자 님</div>
+      <button class="logout-btn" onclick="doLogout()"><span>🚪</span>로그아웃</button>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="admin-page-title">대시보드</div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--text-muted);">관리자 모드</span>
+      </div>
+    </div>
+    <div class="content">
+      <!-- dashboard -->
+      <div class="panel active" id="ap-dashboard">
+        <div class="stats">
+          <div class="stat-card"><div class="stat-label">전체 회원</div><div class="stat-value" id="s-members" style="color:var(--accent)">0</div><div class="stat-sub">등록 회원 수</div></div>
+          <div class="stat-card"><div class="stat-label">활성 카드</div><div class="stat-value" id="s-cards" style="color:var(--green)">0</div><div class="stat-sub">사용 가능</div></div>
+          <div class="stat-card"><div class="stat-label">총 차감 횟수</div><div class="stat-value" id="s-uses" style="color:var(--gold)">0</div><div class="stat-sub">회</div></div>
+          <div class="stat-card"><div class="stat-label">전체 잔여</div><div class="stat-value" id="s-rem" style="color:var(--blue)">0</div><div class="stat-sub">회차</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-box-header"><div class="card-box-title">최근 활동</div></div>
+          <div class="timeline" id="dash-timeline"></div>
+        </div>
+      </div>
+      <!-- members -->
+      <div class="panel" id="ap-members">
+        <div class="search-bar">
+          <input class="search-input" id="m-search" placeholder="이름, 전화번호, 생년월일(YYYY-MM-DD) 검색..." oninput="filterMembers()" style="flex:1;">
+          <button class="app-btn btn-excel" onclick="exportExcel()">📥 엑셀 다운로드</button>
+          <button class="app-btn btn-prim" onclick="openModal('modal-add')">+ 회원 추가</button>
+        </div>
+        <div class="card-box">
+          <div class="card-box-header"><div class="card-box-title">회원 목록</div></div>
+          <table><thead><tr><th>이름</th><th>전화번호</th><th>생년월일</th><th>마케팅 수신</th><th>보유 카드</th><th>잔여 회차</th><th>가입일</th><th></th></tr></thead>
+          <tbody id="m-tbody"></tbody></table>
+        </div>
+      </div>
+      <!-- charge -->
+      <div class="panel" id="ap-charge">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="card-box" style="padding:22px;">
+            <div class="card-box-title" style="margin-bottom:18px;">회차권 충전</div>
+            <div class="form-group">
+              <label class="form-label">회원 검색 <span style="color:var(--red)">*</span></label>
+              <div class="member-search-wrap" id="chg-search-wrap">
+                <span class="member-search-icon">🔍</span>
+                <input class="member-search-input" id="chg-search-input"
+                  placeholder="이름 · 연락처 · 생년월일로 검색..."
+                  oninput="memberSearch('chg')" onfocus="memberSearch('chg')"
+                  autocomplete="off">
+                <div class="member-dropdown" id="chg-dropdown"></div>
+              </div>
+              <div id="chg-selected-card" style="display:none;"></div>
+              <input type="hidden" id="chg-member-id">
+            </div>
+            <div class="form-group">
+              <label class="form-label">이용권 종류</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+                <div id="opt-5" onclick="selPassType(5)" style="border:2px solid var(--blue);border-radius:var(--radius-sm);padding:14px;text-align:center;background:var(--blue-bg);cursor:pointer;">
+                  <div style="font-size:20px;font-weight:800;color:var(--blue);">5회</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">50,000원</div>
+                </div>
+                <div id="opt-10" onclick="selPassType(10)" style="border:2px solid var(--border2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;">
+                  <div style="font-size:20px;font-weight:800;color:var(--gold);">10회</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">100,000원</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">발급자 이름 <span style="color:var(--red)">*</span></label><input class="form-input" id="chg-issuer" placeholder="발급 담당자 이름" oninput="chkIssuer()"><div class="form-hint muted" id="h-issuer">발급자 이름을 입력해야 발행됩니다</div></div>
+            <div class="form-group"><label class="form-label">메모</label><input class="form-input" id="chg-memo" placeholder="결제 방법, 특이사항..."></div>
+            <button class="app-btn btn-prim" id="btn-charge" style="width:100%;justify-content:center;padding:12px;" onclick="doCharge()" disabled>💳 충전하기</button>
+          </div>
+          <div class="card-box">
+            <div class="card-box-header"><div class="card-box-title">최근 충전</div></div>
+            <div class="timeline" id="chg-timeline"></div>
+          </div>
+        </div>
+      </div>
+      <!-- deduct -->
+      <div class="panel" id="ap-deduct">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="card-box" style="padding:22px;">
+            <div class="card-box-title" style="margin-bottom:18px;">회차 차감</div>
+            <div class="form-group">
+              <label class="form-label">회원 검색 <span style="color:var(--red)">*</span></label>
+              <div class="member-search-wrap" id="ded-search-wrap">
+                <span class="member-search-icon">🔍</span>
+                <input class="member-search-input" id="ded-search-input"
+                  placeholder="이름 · 연락처 · 생년월일로 검색..."
+                  oninput="memberSearch('ded')" onfocus="memberSearch('ded')"
+                  autocomplete="off">
+                <div class="member-dropdown" id="ded-dropdown"></div>
+              </div>
+              <div id="ded-selected-card" style="display:none;"></div>
+              <input type="hidden" id="ded-member-id">
+            </div>
+            <div id="ded-preview" style="margin-bottom:16px;"></div>
+            <button class="app-btn btn-grn" style="width:100%;justify-content:center;padding:12px;" onclick="doDeduct()">✂️ 1회 차감</button>
+            <div class="restore-divider"><div class="restore-divider-line"></div><div class="restore-divider-text">실수 복구</div><div class="restore-divider-line"></div></div>
+            <button class="app-btn btn-out" style="width:100%;justify-content:center;padding:11px;color:var(--amber);border-color:rgba(184,134,11,0.3);" onclick="openRestoreModal()">↩️ 1회 복구</button>
+          </div>
+          <div class="card-box">
+            <div class="card-box-header">
+              <div class="card-box-title" id="ded-timeline-title">최근 차감 내역</div>
+              <div id="ded-timeline-badge" style="display:none;"></div>
+            </div>
+            <div class="timeline" id="ded-timeline"></div>
+          </div>
+        </div>
+      </div>
+      <!-- history -->
+      <div class="panel" id="ap-history">
+        <!-- 매출 요약 카드 -->
+        <div class="stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;" id="hist-summary"></div>
+        <div class="card-box">
+          <div class="card-box-header">
+            <div class="card-box-title">전체 거래 내역</div>
+            <button class="app-btn btn-excel" onclick="exportHistoryExcel()">📥 거래내역 다운로드</button>
+          </div>
+          <table><thead><tr><th>일시</th><th>회원</th><th>유형</th><th>카드</th><th>내용</th><th>결제 금액</th><th>잔여</th></tr></thead>
+          <tbody id="hist-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CUSTOMER APP ══ -->
+<div class="shell" id="app-customer" style="display:none;">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">아늑료칸<br>안산역점</div>
+      <div class="sidebar-logo-sub">루프사우나</div>
+    </div>
+    <div class="nav-group-label">내 계정</div>
+    <button class="nav-item active" onclick="showCustPanel('home',this)"><span class="nav-icon">🎫</span>내 이용권</button>
+    <button class="nav-item" onclick="showCustPanel('history',this)"><span class="nav-icon">🕐</span>사용 내역</button>
+    <button class="nav-item" onclick="showCustPanel('profile',this)"><span class="nav-icon">👤</span>내 정보</button>
+    <div style="margin-top:auto;">
+      <div class="sidebar-user" id="cust-user-label"></div>
+      <button class="logout-btn" onclick="doLogout()"><span>🚪</span>로그아웃</button>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="cust-page-title">내 이용권</div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--text-muted);">아늑료칸 안산역점</span>
+      </div>
+    </div>
+    <div class="content">
+      <!-- home -->
+      <div class="panel active" id="cp-home">
+        <div class="cust-header" id="cust-header"></div>
+        <div class="section-title">보유 이용권</div>
+        <div class="pass-grid" id="cust-pass-grid"></div>
+        <div class="card-box">
+          <div class="card-box-header"><div class="card-box-title">최근 이용</div></div>
+          <div class="timeline" id="cust-recent"></div>
+        </div>
+      </div>
+      <!-- history -->
+      <div class="panel" id="cp-history">
+        <div class="card-box">
+          <div class="card-box-header"><div class="card-box-title">전체 이용 내역</div></div>
+          <table><thead><tr><th>일시</th><th>유형</th><th>카드</th><th>내용</th><th>잔여</th></tr></thead>
+          <tbody id="cust-hist-tbody"></tbody></table>
+        </div>
+      </div>
+      <!-- profile -->
+      <div class="panel" id="cp-profile">
+        <div class="card-box" style="padding:24px;max-width:480px;" id="cust-profile-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-title">새 회원 추가</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">이름</label><input class="form-input" id="nm-name" placeholder="홍길동"></div>
+      <div class="form-group"><label class="form-label">전화번호</label><input class="form-input" id="nm-phone" placeholder="010-0000-0000" oninput="fmtPhone(this)"></div>
+    </div>
+    <div class="form-group"><label class="form-label">생년월일</label><input class="form-input" id="nm-birth" type="date"></div>
+    <div class="form-group"><label class="form-label">이메일 (선택)</label><input class="form-input" id="nm-email" placeholder="email@example.com"></div>
+    <div class="modal-actions">
+      <button class="app-btn btn-out" onclick="closeModal('modal-add')">취소</button>
+      <button class="app-btn btn-prim" onclick="addMember()">추가</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-title" id="detail-title"></div>
+    <div id="detail-cards"></div>
+    <div class="modal-actions"><button class="app-btn btn-out" onclick="closeModal('modal-detail')">닫기</button></div>
+  </div>
+</div>
+
+<!-- ══ 복구 확인 모달 ══ -->
+<div class="overlay" id="modal-restore">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title" style="color:var(--amber);">↩️ 1회차 복구</div>
+
+    <div class="restore-box">
+      <div class="restore-box-title">⚠️ 복구 주의사항</div>
+      <div class="restore-box-desc">
+        실수로 차감된 회차를 1회 복구합니다.<br>
+        복구 내역은 전체 거래 내역에 기록됩니다.<br>
+        복구자 이름과 관리자 비밀번호가 모두 필요합니다.
+      </div>
+    </div>
+
+    <div id="restore-member-info" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;font-size:13px;color:var(--text-muted);">
+      회원을 먼저 선택해 주세요
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">복구자 이름 <span style="color:var(--red)">*</span></label>
+      <input class="form-input" id="restore-name" placeholder="복구 담당자 이름" oninput="chkRestoreReady()">
+      <div class="form-hint muted" id="h-restore-name">복구를 진행하는 담당자 이름을 입력하세요</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">관리자 비밀번호 <span style="color:var(--red)">*</span></label>
+      <div class="modal-pw-row">
+        <div class="form-group">
+          <div class="pw-wrap">
+            <input class="form-input" id="restore-pw" type="password" placeholder="관리자 비밀번호 입력" oninput="chkRestoreReady()">
+            <button class="pw-eye" onclick="togglePw('restore-pw',this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-hint err" id="h-restore-pw" style="display:none;">비밀번호가 올바르지 않습니다.</div>
+      <div class="pw-verified-badge" id="restore-pw-verified" style="display:none;">✓ 비밀번호 확인됨</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">복구 사유 (선택)</label>
+      <input class="form-input" id="restore-reason" placeholder="예: 실수 차감, 시스템 오류 등">
+    </div>
+
+    <div class="modal-actions">
+      <button class="app-btn btn-out" onclick="closeModal('modal-restore')">취소</button>
+      <button class="app-btn" id="btn-do-restore"
+        style="background:var(--amber);color:#fff;opacity:0.4;pointer-events:none;"
+        onclick="doRestore()">↩️ 복구 확정</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LOGO = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCALhBKcDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECCP/EABgQAQEBAQEAAAAAAAAAAAAAAAABETFB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAGREBAQEBAQEAAAAAAAAAAAAAAAERITFB/9oADAMBAAIRAxEAPwDjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//2Q==';
+// admin login uses separate overlay with PIN
+const CG = ['linear-gradient(135deg,#3d2b1a 0%,#6b4226 100%)',
+            'linear-gradient(135deg,#1a3028 0%,#2d5c42 100%)',
+            'linear-gradient(135deg,#2a1a10 0%,#7a4020 100%)',
+            'linear-gradient(135deg,#1e2a3a 0%,#2d4a6e 100%)'];
+const CA = ['#e8c99a','#7ecfaa','#f0a070','#88b8e0'];
+
+let DB = {
+  members:[
+    {id:1,name:'김지수',phone:'010-1234-5678',birth:'1990-05-15',password:'pass1234',joinDate:'2024-11-03',privacy:true,marketing:true},
+    {id:2,name:'이민준',phone:'010-2345-6789',birth:'1985-11-22',password:'pass1234',joinDate:'2024-12-15',privacy:true,marketing:false},
+    {id:3,name:'박서연',phone:'010-3456-7890',birth:'1995-03-08',password:'pass1234',joinDate:'2025-01-20',privacy:true,marketing:true},
+  ],
+  cards:[
+    {id:'C001',mid:1,type:5, total:5, rem:3,issued:'2025-01-10',status:'active'},
+    {id:'C002',mid:1,type:10,total:10,rem:10,issued:'2025-02-01',status:'active'},
+    {id:'C003',mid:2,type:5, total:5, rem:1,issued:'2025-01-22',status:'active'},
+    {id:'C004',mid:3,type:10,total:10,rem:7,issued:'2025-02-10',status:'active'},
+    {id:'C005',mid:2,type:10,total:10,rem:0,issued:'2024-12-20',status:'exhausted'},
+  ],
+  logs:[
+    {id:1, type:'charge',mid:1,cid:'C001',note:'현금',amt:5, date:'2025-01-10 14:23',after:5,issuer:'김매니저'},
+    {id:2, type:'use',   mid:1,cid:'C001',note:'',   amt:-1,date:'2025-01-15 10:00',after:4},
+    {id:3, type:'use',   mid:1,cid:'C001',note:'',   amt:-1,date:'2025-01-22 11:30',after:3},
+    {id:4, type:'charge',mid:1,cid:'C002',note:'카드',amt:10,date:'2025-02-01 16:00',after:10,issuer:'이대리'},
+    {id:5, type:'charge',mid:2,cid:'C003',note:'현금',amt:5, date:'2025-01-22 09:00',after:5,issuer:'김매니저'},
+    {id:6, type:'use',   mid:2,cid:'C003',note:'',   amt:-1,date:'2025-01-25 10:00',after:4},
+    {id:7, type:'use',   mid:2,cid:'C003',note:'',   amt:-1,date:'2025-02-01 11:00',after:3},
+    {id:8, type:'use',   mid:2,cid:'C003',note:'',   amt:-1,date:'2025-02-08 10:30',after:2},
+    {id:9, type:'use',   mid:2,cid:'C003',note:'',   amt:-1,date:'2025-02-15 09:45',after:1},
+    {id:10,type:'charge',mid:3,cid:'C004',note:'카드',amt:10,date:'2025-02-10 15:00',after:10,issuer:'이대리'},
+    {id:11,type:'use',   mid:3,cid:'C004',note:'',   amt:-1,date:'2025-02-12 10:00',after:9},
+    {id:12,type:'use',   mid:3,cid:'C004',note:'',   amt:-1,date:'2025-02-19 11:00',after:8},
+    {id:13,type:'use',   mid:3,cid:'C004',note:'',   amt:-1,date:'2025-02-26 10:30',after:7},
+  ],
+  nextCid:6, nextLid:14, passType:5
+};
+
+let su = {name:'',phone:'',birth:'',verified:false,sentCode:'',timer:null,privacy:false,marketing:false};
+let currentCustId = null;
+
+// helpers
+const gm = id=>DB.members.find(m=>m.id===id);
+const gc = id=>DB.cards.find(c=>c.id===id);
+const gmCards = mid=>DB.cards.filter(c=>c.mid===mid);
+const gmActive= mid=>DB.cards.filter(c=>c.mid===mid&&c.status==='active'&&c.rem>0);
+const totalRem= mid=>gmActive(mid).reduce((s,c)=>s+c.rem,0);
+function nowStr(){const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes());}
+function p2(n){return String(n).padStart(2,'0');}
+function fmtDate(s){if(!s)return'';const p=s.split('-');return p[0]+'년 '+parseInt(p[1])+'월 '+parseInt(p[2])+'일';}
+
+function toast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.borderLeftColor=color||'var(--green)';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+}
+function fmtPhone(el){
+  let v=el.value.replace(/\D/g,'');if(v.length>11)v=v.slice(0,11);
+  if(v.length<=3)el.value=v;
+  else if(v.length<=7)el.value=v.slice(0,3)+'-'+v.slice(3);
+  else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+}
+function togglePw(id,btn){const el=document.getElementById(id);if(el.type==='password'){el.type='text';btn.textContent='🙈';}else{el.type='password';btn.textContent='👁';}}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ── AUTH TAB ──
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-signup').classList.toggle('active',t==='signup');
+  document.getElementById('auth-login').style.display=t==='login'?'block':'none';
+  document.getElementById('auth-signup').style.display=t==='signup'?'block':'none';
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const phone=document.getElementById('login-phone').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  const m=DB.members.find(m=>m.phone===phone&&m.password===pw);
+  if(m){launchCustomer(m.id);return;}
+  toast('전화번호 또는 비밀번호가 올바르지 않습니다.','var(--red)');
+}
+
+function launchAdmin(){
+  hide('auth-screen');show('app-admin');
+  renderDashboard();renderMemberSelect();
+}
+function launchCustomer(mid){
+  currentCustId=mid;
+  const m=gm(mid);
+  hide('auth-screen');hide('app-admin');show('app-customer');
+  document.getElementById('cust-user-label').textContent=m.name+' 님';
+  renderCustHome();
+}
+function doLogout(){
+  hide('app-admin');hide('app-customer');show('auth-screen');
+  document.getElementById('login-phone').value='';
+  document.getElementById('login-pw').value='';
+  resetSignup();switchTab('login');
+}
+function hide(id){document.getElementById(id).style.display='none';}
+function show(id){document.getElementById(id).style.display='flex';}
+
+// ── SIGNUP ──
+function resetSignup(){
+  if(su.timer)clearInterval(su.timer);
+  su={name:'',phone:'',birth:'',verified:false,sentCode:'',timer:null,privacy:false,marketing:false};
+  ['su-name','su-phone','su-pw','su-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const sb=document.getElementById('su-birth');if(sb)sb.value='';
+  const be=document.getElementById('h-birth');if(be)be.style.display='none';
+  const bo=document.getElementById('h-birth-ok');if(bo)bo.style.display='none';
+  const pn=document.getElementById('phone-verified-notice');if(pn)pn.style.display='none';
+  setFld('su-birth','');
+  const oi=document.getElementById('otp-input');if(oi){oi.value='';oi.className='otp-single';}
+  const cp=document.getElementById('chk-privacy');if(cp)cp.checked=false;
+  const cm=document.getElementById('chk-marketing');if(cm)cm.checked=false;
+  const bn=document.getElementById('btn-next3');if(bn)bn.disabled=true;
+  goStepRaw(1);
+}
+
+function goStep(n){
+  goStepRaw(n);
+}
+function tryGoStep2(){
+  const birthEl=document.getElementById('su-birth');
+  const birthVal=birthEl?birthEl.value:'';
+  if(!birthVal){
+    const errEl=document.getElementById('h-birth');
+    const okEl=document.getElementById('h-birth-ok');
+    if(errEl)errEl.style.display='block';
+    if(okEl)okEl.style.display='none';
+    setFld('su-birth','err');
+    birthEl&&birthEl.focus();
+    toast('생년월일을 입력해 주세요','var(--red)');
+    return;
+  }
+  if(document.getElementById('su-name').value.trim().length<2){
+    toast('이름을 입력해 주세요','var(--red)');
+    document.getElementById('su-name').focus();
+    return;
+  }
+  if(!su.verified){
+    toast('전화번호 인증이 필요합니다','var(--red)');
+    return;
+  }
+  goStepRaw(2);
+}
+function chkConsent(){
+  const priv=document.getElementById('chk-privacy')?.checked||false;
+  su.privacy=priv;
+  su.marketing=document.getElementById('chk-marketing')?.checked||false;
+  const btn=document.getElementById('btn-next3');
+  if(btn)btn.disabled=!priv;
+}
+
+function goStepRaw(n){
+  [1,2,3,4,5].forEach(i=>{
+    const p=document.getElementById('step-'+i);
+    if(p)p.classList.toggle('active',i===n);
+    const sd=document.getElementById('sd'+i);
+    const sl=document.getElementById('sl-'+i);
+    if(sd){
+      if(i<n){sd.className='step-dot done';sd.textContent='✓';}
+      else if(i===n){sd.className='step-dot active';sd.textContent=i;}
+      else{sd.className='step-dot pending';sd.textContent=i;}
+    }
+    if(sl){sl.className='step-label'+(i<n?' done':i===n?' active':'');}
+    if(i<5){const line=document.getElementById('sl'+i);if(line)line.className='step-line'+(i<n?' done':'');}
+  });
+}
+
+function chkName(){
+  const v=document.getElementById('su-name').value.trim();su.name=v;
+  const ok=v.length>=2;
+  setHint('h-name',ok?'✓ 확인됨':v?'2자 이상 입력해 주세요':'실명을 입력해 주세요',ok?'ok':v?'err':'muted');
+  setFld('su-name',ok?'ok':v?'err':'');
+  updateNext1();
+}
+function chkPhone(){
+  const v=document.getElementById('su-phone').value.trim();su.phone=v;
+  const ok=/^\d{3}-\d{3,4}-\d{4}$/.test(v);
+  const dup=ok&&DB.members.find(m=>m.phone===v);
+  const btn=document.getElementById('btn-send');
+  if(!v){setHint('h-phone','전화번호 입력 후 인증번호를 전송하세요','muted');setFld('su-phone','');btn.disabled=true;}
+  else if(!ok){setHint('h-phone','올바른 형식으로 입력해 주세요','err');setFld('su-phone','err');btn.disabled=true;}
+  else if(dup){setHint('h-phone','이미 가입된 전화번호입니다','err');setFld('su-phone','err');btn.disabled=true;}
+  else{setHint('h-phone','인증번호를 전송하세요','muted');setFld('su-phone','');btn.disabled=false;}
+  updateNext1();
+}
+function chkBirth(){
+  const v=document.getElementById('su-birth').value||'';
+  su.birth=v;
+  const errEl=document.getElementById('h-birth');
+  const okEl=document.getElementById('h-birth-ok');
+  if(!v){
+    if(errEl)errEl.style.display='block';
+    if(okEl)okEl.style.display='none';
+    setFld('su-birth','err');
+  } else {
+    if(errEl)errEl.style.display='none';
+    if(okEl)okEl.style.display='block';
+    setFld('su-birth','ok');
+  }
+  updateNext1();
+}
+function updateNext1(){
+  const birthEl=document.getElementById('su-birth');
+  const birthOk=!!(birthEl&&birthEl.value&&birthEl.value.length>0);
+  const nameOk=document.getElementById('su-name').value.trim().length>=2;
+  const btn=document.getElementById('btn-next1');
+  if(btn) btn.disabled=!(birthOk&&nameOk&&su.verified);
+
+  // 인증 완료 뱃지
+  const notice=document.getElementById('phone-verified-notice');
+  if(notice) notice.style.display=su.verified?'block':'none';
+}
+function setHint(id,msg,cls){const el=document.getElementById(id);if(el){el.textContent=msg;el.className='form-hint '+(cls||'muted');}}
+function setFld(id,cls){const el=document.getElementById(id);if(el)el.className='form-input'+(cls?' '+cls:'');}
+
+function sendCode(){
+  const code=String(Math.floor(100000+Math.random()*900000));
+  su.sentCode=code;su.verified=false;
+  document.getElementById('btn-send').disabled=true;
+  document.getElementById('btn-send').textContent='전송됨';
+  toast('📱 인증번호: '+code+'  (데모 — 실제 서비스에서는 SMS 발송)');
+  setHint('h-phone','인증번호가 전송되었습니다','ok');
+  goStepRaw(2);
+  document.getElementById('sent-to-label').textContent=su.phone+' 로 인증번호를 전송했습니다';
+  document.getElementById('otp-input').value='';
+  document.getElementById('otp-input').className='otp-single';
+  startTimer();
+  setTimeout(()=>document.getElementById('otp-input').focus(),100);
+}
+
+function resendCode(){
+  const code=String(Math.floor(100000+Math.random()*900000));
+  su.sentCode=code;su.verified=false;
+  document.getElementById('otp-input').value='';
+  document.getElementById('otp-input').className='otp-single';
+  document.getElementById('h-otp').textContent='';
+  document.getElementById('btn-verify').disabled=true;
+  toast('📱 새 인증번호: '+code);
+  startTimer();
+  document.getElementById('otp-input').focus();
+}
+
+function startTimer(){
+  if(su.timer)clearInterval(su.timer);
+  let sec=180;
+  const el=document.getElementById('countdown');
+  el.className='countdown';tick();
+  su.timer=setInterval(()=>{sec--;tick();if(sec<=0){clearInterval(su.timer);el.className='countdown expired';el.textContent='만료 — 재전송하세요';}},1000);
+  function tick(){el.textContent=Math.floor(sec/60)+':'+p2(sec%60)+' 남음';}
+}
+
+function onOtp(){
+  const v=document.getElementById('otp-input').value.replace(/\D/g,'');
+  document.getElementById('otp-input').value=v;
+  document.getElementById('btn-verify').disabled=v.length!==6;
+  document.getElementById('otp-input').className='otp-single';
+  document.getElementById('h-otp').textContent='';
+}
+
+function verifyCode(){
+  const entered=document.getElementById('otp-input').value;
+  if(entered===su.sentCode){
+    clearInterval(su.timer);su.verified=true;
+    document.getElementById('otp-input').className='otp-single ok';
+    setHint('h-otp','✓ 인증되었습니다','ok');
+    document.getElementById('countdown').textContent='';
+    setTimeout(()=>{updateNext1();goStepRaw(3);},600);
+  } else {
+    document.getElementById('otp-input').className='otp-single err';
+    setHint('h-otp','인증번호가 올바르지 않습니다','err');
+  }
+}
+
+function chkPw(){
+  const v=document.getElementById('su-pw').value;
+  const bars=[document.getElementById('pb1'),document.getElementById('pb2'),document.getElementById('pb3')];
+  bars.forEach(b=>b.className='pw-bar');
+  if(!v){setHint('h-pw','','muted');chkPw2();return;}
+  let s=0;if(v.length>=8)s++;if(/[a-zA-Z]/.test(v)&&/[0-9]/.test(v))s++;if(/[^a-zA-Z0-9]/.test(v)||v.length>=12)s++;
+  if(s===1){bars[0].classList.add('weak');setHint('h-pw','약한 비밀번호','err');}
+  else if(s===2){bars[0].classList.add('medium');bars[1].classList.add('medium');setHint('h-pw','적절한 비밀번호','muted');}
+  else{bars.forEach(b=>b.classList.add('strong'));setHint('h-pw','강한 비밀번호 👍','ok');}
+  chkPw2();
+}
+function chkPw2(){
+  const pw=document.getElementById('su-pw').value;
+  const pw2=document.getElementById('su-pw2').value;
+  if(!pw2){setHint('h-pw2','','muted');setFld('su-pw2','');document.getElementById('btn-signup').disabled=true;return;}
+  if(pw===pw2){setHint('h-pw2','✓ 일치합니다','ok');setFld('su-pw2','ok');document.getElementById('btn-signup').disabled=pw.length<6;}
+  else{setHint('h-pw2','비밀번호가 일치하지 않습니다','err');setFld('su-pw2','err');document.getElementById('btn-signup').disabled=true;}
+}
+
+function doSignup(){
+  const pw=document.getElementById('su-pw').value;
+  const id=DB.members.length?Math.max(...DB.members.map(m=>m.id))+1:1;
+  DB.members.push({id,name:su.name,phone:su.phone,birth:su.birth,password:pw,joinDate:new Date().toISOString().slice(0,10),privacy:su.privacy,marketing:su.marketing});
+  document.getElementById('success-msg').textContent=su.name+' 님, 환영합니다! 아늑료칸 안산역점 루프사우나에 오신 것을 환영합니다.';
+  goStepRaw(5);
+}
+function afterSignup(){
+  const phone=su.phone;
+  resetSignup();switchTab('login');
+  document.getElementById('login-phone').value=phone;
+}
+
+// ── ADMIN PANELS ──
+function showAdminPanel(name,btn){
+  document.querySelectorAll('#app-admin .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ap-'+name).classList.add('active');
+  document.querySelectorAll('#app-admin .nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const titles={dashboard:'대시보드',members:'회원 관리',charge:'회차권 충전',deduct:'회차 차감',history:'전체 내역'};
+  document.getElementById('admin-page-title').textContent=titles[name]||'';
+  if(name==='dashboard')renderDashboard();
+  if(name==='members')renderMembers();
+  if(name==='charge')renderChargePanel();
+  if(name==='deduct')renderDeductPanel();
+  if(name==='history')renderHistory();
+}
+
+function renderDashboard(){
+  document.getElementById('s-members').textContent=DB.members.length;
+  document.getElementById('s-cards').textContent=DB.cards.filter(c=>c.status==='active'&&c.rem>0).length;
+  document.getElementById('s-uses').textContent=DB.logs.filter(l=>l.type==='use').length;
+  document.getElementById('s-rem').textContent=DB.cards.reduce((s,c)=>s+c.rem,0);
+  const el=document.getElementById('dash-timeline');
+  const items=[...DB.logs].reverse().slice(0,8);
+  el.innerHTML=items.map(l=>{
+    const m=gm(l.mid);const isC=l.type==='charge';
+    return `<div class="tl-item"><div class="tl-dot ${isC?'charge':'use'}"></div>
+    <div class="tl-content"><div class="tl-main">${m?.name} — ${isC?'+'+l.amt+'회 충전':'1회 사용'}</div>
+    <div class="tl-sub">${l.cid}${l.note?' · '+l.note:''}</div></div>
+    <div class="tl-right">${l.date}</div></div>`;
+  }).join('')||'<div class="empty-state"><div class="empty-msg">활동 없음</div></div>';
+}
+
+function renderMembers(q){
+  let list=DB.members;
+  if(q){const lq=q.toLowerCase();list=list.filter(m=>m.name.includes(q)||m.phone.includes(q)||(m.birth&&m.birth.includes(q)));}
+  document.getElementById('m-tbody').innerHTML=list.map(m=>{
+    const cards=gmCards(m.id);const rem=totalRem(m.id);
+    const badge=rem===0?'<span class="badge red">소진</span>':rem<=2?`<span class="badge amber">⚠ ${rem}회</span>`:`<span class="badge green">● ${rem}회</span>`;
+    const mkt=m.marketing?'<span class="mkting-on">✓ 동의</span>':'<span class="mkting-off">미동의</span>';
+    return `<tr>
+      <td style="font-weight:600">${m.name}</td>
+      <td style="color:var(--text-muted)">${m.phone}</td>
+      <td style="color:var(--text-muted)">${m.birth?fmtDate(m.birth):'-'}</td>
+      <td>${mkt}</td>
+      <td>${cards.length}장 <span style="font-size:11px;color:var(--text-dim)">(활성 ${cards.filter(c=>c.status==='active'&&c.rem>0).length})</span></td>
+      <td>${badge}</td>
+      <td style="color:var(--text-muted);font-size:12px">${m.joinDate}</td>
+      <td><button class="app-btn btn-out btn-xs" onclick="openDetail(${m.id})">상세</button></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text-muted)">검색 결과 없음</td></tr>';
+}
+function filterMembers(){renderMembers(document.getElementById('m-search').value.trim()||undefined);}
+
+function openDetail(mid){
+  const m=gm(mid);
+  document.getElementById('detail-title').textContent=m.name+' 님의 카드';
+  const cards=gmCards(mid);
+  document.getElementById('detail-cards').innerHTML=!cards.length?'<div style="color:var(--text-muted)">카드 없음</div>':
+    cards.map((c,i)=>`<div style="background:${CG[i%4]};border-radius:12px;padding:18px;margin-bottom:10px;color:#fff;">
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-size:11px;opacity:0.7;font-weight:700;letter-spacing:0.1em">${c.type}회권 · ${c.id}</span>
+        <span style="font-size:11px;opacity:0.6">${c.status==='exhausted'?'소진':c.rem+'회 남음'}</span>
+      </div>
+      <div style="font-size:28px;font-weight:800;margin-top:8px">${c.rem}<span style="font-size:14px;opacity:0.65"> / ${c.total}</span></div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:10px">
+        ${Array.from({length:c.total}).map((_,j)=>`<div style="width:9px;height:9px;border-radius:50%;background:${j<c.total-c.rem?'rgba(255,255,255,0.18)':'rgba(255,255,255,0.85)'}"></div>`).join('')}
+      </div>
+      <div style="font-size:11px;opacity:0.45;margin-top:6px">발급일 ${c.issuedAt||c.issued}${c.issuer?' · 발급자: '+c.issuer:''}</div>
+    </div>`).join('');
+  openModal('modal-detail');
+}
+
+function addMember(){
+  const name=document.getElementById('nm-name').value.trim();
+  const phone=document.getElementById('nm-phone').value.trim();
+  const birth=document.getElementById('nm-birth').value;
+  if(!name||!phone){alert('이름과 연락처를 입력하세요.');return;}
+  const id=DB.members.length?Math.max(...DB.members.map(m=>m.id))+1:1;
+  DB.members.push({id,name,phone,birth,password:'',joinDate:new Date().toISOString().slice(0,10),privacy:true,marketing:false});
+  closeModal('modal-add');['nm-name','nm-phone','nm-birth','nm-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderMembers();toast(name+' 회원이 추가되었습니다.');
+}
+
+function renderMemberSelect(){
+  // no-op: now using search dropdowns
+}
+
+// ── 회원 검색 드롭다운 공통 함수 ──
+function memberSearch(prefix){
+  const q=(document.getElementById(prefix+'-search-input').value||'').trim().toLowerCase();
+  const dd=document.getElementById(prefix+'-dropdown');
+
+  let results=DB.members;
+  if(q){
+    results=DB.members.filter(m=>
+      m.name.includes(q)||
+      m.phone.replace(/-/g,'').includes(q.replace(/-/g,''))||
+      (m.birth&&m.birth.includes(q))
+    );
+  }
+
+  if(!results.length){
+    dd.innerHTML='<div class="member-drop-empty">검색 결과가 없습니다</div>';
+    dd.classList.add('open');return;
+  }
+
+  const selId=parseInt(document.getElementById(prefix+'-member-id').value)||null;
+  dd.innerHTML=results.map(m=>{
+    const rem=totalRem(m.id);
+    const cards=gmActive(m.id).length;
+    return `<div class="member-drop-item${selId===m.id?' selected':''}" onclick="selectMember('${prefix}',${m.id})">
+      <div>
+        <div class="mdi-name">${m.name}</div>
+        <div class="mdi-meta">${m.phone}${m.birth?' · '+m.birth:''}</div>
+      </div>
+      <div class="mdi-rem${rem===0?' zero':''}">${rem}회 남음<br><span style="font-size:10px;font-weight:400;color:var(--text-dim)">${cards}장 활성</span></div>
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function selectMember(prefix, mid){
+  const m=gm(mid);
+  const rem=totalRem(mid);
+  // hide dropdown
+  document.getElementById(prefix+'-dropdown').classList.remove('open');
+  // set hidden value
+  document.getElementById(prefix+'-member-id').value=mid;
+  // clear search input and show selected card
+  document.getElementById(prefix+'-search-input').value='';
+
+  const card=document.getElementById(prefix+'-selected-card');
+  card.style.display='block';
+  card.innerHTML=`<div class="member-selected-card">
+    <div class="msc-info">
+      <div class="msc-name">${m.name}</div>
+      <div class="msc-meta">${m.phone}${m.birth?' · '+m.birth:''}</div>
+      <div class="msc-rem${rem===0?' zero':''}" style="margin-top:4px;">잔여 ${rem}회 · 활성 ${gmActive(mid).length}장</div>
+    </div>
+    <button class="msc-clear" onclick="clearMember('${prefix}')" title="선택 해제">✕</button>
+  </div>`;
+
+  if(prefix==='ded'){ previewDeduct(); renderDedTimeline(mid); }
+}
+
+function clearMember(prefix){
+  document.getElementById(prefix+'-member-id').value='';
+  document.getElementById(prefix+'-search-input').value='';
+  document.getElementById(prefix+'-selected-card').style.display='none';
+  document.getElementById(prefix+'-dropdown').classList.remove('open');
+  if(prefix==='ded'){
+    document.getElementById('ded-preview').innerHTML='';
+    renderDedTimeline(null);
+  }
+}
+
+// 드롭다운 외부 클릭 시 닫기
+document.addEventListener('click',function(e){
+  ['chg','ded'].forEach(p=>{
+    const wrap=document.getElementById(p+'-search-wrap');
+    if(wrap&&!wrap.contains(e.target)){
+      const dd=document.getElementById(p+'-dropdown');
+      if(dd)dd.classList.remove('open');
+    }
+  });
+});
+
+
+function renderChargePanel(){
+  renderMemberSelect();
+  const el=document.getElementById('chg-timeline');
+  const items=DB.logs.filter(l=>l.type==='charge').reverse().slice(0,8);
+  el.innerHTML=items.map(l=>{const m=gm(l.mid);return`<div class="tl-item"><div class="tl-dot charge"></div>
+    <div class="tl-content"><div class="tl-main">${m?.name} — <span style="color:var(--gold)">+${l.amt}회</span>${l.issuer?' <span style="font-size:11px;color:var(--text-dim)">발급: '+l.issuer+'</span>':''}</div>
+    <div class="tl-sub">${l.cid}${l.note?' · '+l.note:''} · ${l.date}</div></div>
+    </div>`;}).join('')||'<div class="empty-state"><div class="empty-msg">내역 없음</div></div>';
+}
+
+function selPassType(n){
+  DB.passType=n;
+  const o5=document.getElementById('opt-5');const o10=document.getElementById('opt-10');
+  if(n===5){o5.style.border='2px solid var(--blue)';o5.style.background='var(--blue-bg)';o10.style.border='2px solid var(--border2)';o10.style.background='transparent';}
+  else{o10.style.border='2px solid var(--gold)';o10.style.background='var(--gold-bg)';o5.style.border='2px solid var(--border2)';o5.style.background='transparent';}
+}
+
+function doCharge(){
+  const issuer=document.getElementById('chg-issuer').value.trim();
+  if(!issuer){toast('발급자 이름을 입력해 주세요','var(--red)');return;}
+  const mid=parseInt(document.getElementById('chg-member-id').value||'0');
+  if(!mid){toast('충전할 회원을 먼저 검색하여 선택해 주세요','var(--red)');return;}
+  const type=DB.passType;const memo=document.getElementById('chg-memo').value.trim();
+  const m=gm(mid);const cid='C'+String(DB.nextCid++).padStart(3,'0');
+  const issuedAt=nowStr();
+  DB.cards.push({id:cid,mid,type,total:type,rem:type,issued:new Date().toISOString().slice(0,10),issuedAt,issuer,status:'active'});
+  DB.logs.push({id:DB.nextLid++,type:'charge',mid,cid,note:memo||'현장',amt:type,date:issuedAt,after:type,issuer});
+  document.getElementById('chg-memo').value='';
+  document.getElementById('chg-issuer').value='';
+  document.getElementById('btn-charge').disabled=true;
+  document.getElementById('h-issuer').textContent='발급자 이름을 입력해야 발행됩니다';
+  document.getElementById('h-issuer').className='form-hint muted';
+  clearMember('chg');
+  renderChargePanel();renderDashboard();
+  toast(m.name+' 님 '+type+'회권('+cid+') 충전 완료! 발급: '+issuer+' / '+issuedAt);
+}
+
+function renderDeductPanel(){
+  renderMemberSelect();
+  previewDeduct();
+  const mid=parseInt(document.getElementById('ded-member-id').value||'0');
+  renderDedTimeline(mid||null);
+}
+
+function renderDedTimeline(mid){
+  const el=document.getElementById('ded-timeline');
+  const titleEl=document.getElementById('ded-timeline-title');
+  const badgeEl=document.getElementById('ded-timeline-badge');
+
+  let items;
+  if(mid){
+    const m=gm(mid);
+    items=DB.logs.filter(l=>(l.type==='use'||l.type==='restore')&&l.mid===mid).reverse().slice(0,20);
+    if(titleEl) titleEl.textContent=m.name+' 님 차감·복구 내역';
+    if(badgeEl){
+      badgeEl.style.display='inline-block';
+      const rem=totalRem(mid);
+      badgeEl.innerHTML=`<span style="font-size:12px;font-weight:600;color:${rem===0?'var(--red)':rem<=2?'var(--amber)':'var(--green)'}">잔여 ${rem}회</span>`;
+    }
+  } else {
+    items=DB.logs.filter(l=>l.type==='use'||l.type==='restore').reverse().slice(0,10);
+    if(titleEl) titleEl.textContent='최근 차감 내역';
+    if(badgeEl) badgeEl.style.display='none';
+  }
+
+  el.innerHTML=items.map(l=>{
+    const m=gm(l.mid);const isR=l.type==='restore';
+    return`<div class="tl-item">
+    <div class="tl-dot" style="background:${isR?'var(--amber)':'var(--green)'}"></div>
+    <div class="tl-content">
+      <div class="tl-main">${!mid?'<strong>'+m?.name+'</strong> — ':''}${isR?'<span style="color:var(--amber)">↩ 1회 복구</span>':'<span style="color:var(--green)">1회 사용</span>'}${isR&&l.restorer?' <span style="font-size:11px;color:var(--text-dim)">복구자: '+l.restorer+'</span>':''}</div>
+      <div class="tl-sub">${l.cid} · 잔여 ${l.after}회${l.note?' · '+l.note:''}</div>
+    </div>
+    <div class="tl-right">${l.date}</div></div>`;
+  }).join('')||'<div class="empty-state"><div class="empty-msg">내역 없음</div></div>';
+}
+
+function previewDeduct(){
+  const mid=parseInt(document.getElementById('ded-member-id').value||'0');
+  const active=gmActive(mid);const el=document.getElementById('ded-preview');
+  if(!active.length){el.innerHTML=`<div style="background:var(--red-bg);border:1px solid rgba(192,57,43,0.2);border-radius:var(--radius-sm);padding:14px;color:var(--red);font-size:13px;">⚠ 사용 가능한 카드가 없습니다</div>`;return;}
+  const c=active[0];
+  el.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px;">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">차감될 카드 (오래된 순 · FIFO)</div>
+    <div style="font-size:15px;font-weight:700;">${c.id} <span class="chip chip-${c.type}">${c.type}회권</span></div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">현재 <strong style="color:var(--text)">${c.rem}회</strong> → 차감 후 <strong style="color:var(--green)">${c.rem-1}회</strong></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
+      ${Array.from({length:c.total}).map((_,j)=>`<div style="width:9px;height:9px;border-radius:50%;background:${j<c.total-c.rem?'rgba(44,30,15,0.12)':'var(--green)'}"></div>`).join('')}
+    </div></div>`;
+}
+
+function doDeduct(){
+  const mid=parseInt(document.getElementById('ded-member-id').value||'0');
+  if(!mid){toast('차감할 회원을 먼저 검색하여 선택해 주세요','var(--red)');return;}
+  const active=gmActive(mid);
+  if(!active.length){toast('사용 가능한 카드가 없습니다','var(--red)');return;}
+  const card=active[0];card.rem-=1;if(card.rem===0)card.status='exhausted';
+  const m=gm(mid);
+  DB.logs.push({id:DB.nextLid++,type:'use',mid,cid:card.id,note:'',amt:-1,date:nowStr(),after:card.rem});
+  previewDeduct();
+  renderDedTimeline(mid);
+  renderDashboard();
+  if(card.rem===0)toast(m.name+' 님 카드('+card.id+') 소진','var(--amber)');
+  else if(card.rem<=2)toast('⚠ '+m.name+' 님 잔여 '+card.rem+'회 — 충전 필요','var(--amber)');
+  else toast(m.name+' 님 1회 차감. 잔여 '+card.rem+'회');
+}
+
+const PASS_PRICE = {5: 50000, 10: 100000};
+function getPrice(amt){ return amt>0 ? (PASS_PRICE[amt]||0) : 0; }
+function fmtMoney(n){ return n>0 ? n.toLocaleString('ko-KR')+'원' : '-'; }
+
+function renderHistory(){
+  const tbody=document.getElementById('hist-tbody');
+  const logs=[...DB.logs].reverse();
+
+  // 매출 요약
+  const charges=DB.logs.filter(l=>l.type==='charge');
+  const totalSales=charges.reduce((s,l)=>s+getPrice(l.amt),0);
+  const todayStr=new Date().toISOString().slice(0,10);
+  const todaySales=charges.filter(l=>l.date.startsWith(todayStr)).reduce((s,l)=>s+getPrice(l.amt),0);
+  const totalUses=DB.logs.filter(l=>l.type==='use').length;
+  const totalRestores=DB.logs.filter(l=>l.type==='restore').length;
+  const summaryEl=document.getElementById('hist-summary');
+  if(summaryEl) summaryEl.innerHTML=`
+    <div class="stat-card"><div class="stat-label">총 매출</div><div class="stat-value" style="color:var(--gold);font-size:20px">${(totalSales/10000).toFixed(0)}만원</div><div class="stat-sub">${totalSales.toLocaleString('ko-KR')}원</div></div>
+    <div class="stat-card"><div class="stat-label">오늘 매출</div><div class="stat-value" style="color:var(--accent);font-size:20px">${(todaySales/10000).toFixed(0)}만원</div><div class="stat-sub">${todaySales.toLocaleString('ko-KR')}원</div></div>
+    <div class="stat-card"><div class="stat-label">총 충전 건수</div><div class="stat-value" style="color:var(--blue)">${charges.length}</div><div class="stat-sub">건</div></div>
+    <div class="stat-card"><div class="stat-label">총 이용 횟수</div><div class="stat-value" style="color:var(--green)">${totalUses}</div><div class="stat-sub">회 (복구 ${totalRestores}건)</div></div>`;
+
+  tbody.innerHTML=logs.map(l=>{
+    const m=gm(l.mid);const isC=l.type==='charge';const isR=l.type==='restore';
+    const price=isC?getPrice(l.amt):0;
+    const priceCell=isC
+      ?`<strong style="color:var(--gold)">${fmtMoney(price)}</strong>`
+      :`<span style="color:var(--text-dim)">-</span>`;
+    return `<tr>
+    <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${l.date}</td>
+    <td style="font-weight:600">${m?.name||'?'}</td>
+    <td><span class="badge ${isC?'gold':isR?'amber':'green'}">${isC?'충전':isR?'복구':'사용'}</span></td>
+    <td style="color:var(--text-muted);font-size:12px">${l.cid}</td>
+    <td style="font-size:13px">${isC?'+'+l.amt+'회권':isR?'↩ 1회 복구':'1회 사용'}${l.note?' <span style="color:var(--text-dim);font-size:11px">('+l.note+')</span>':''}${isC&&l.issuer?' <span style="color:var(--text-dim);font-size:11px">발급: '+l.issuer+'</span>':''}${isR&&l.restorer?' <span style="color:var(--text-dim);font-size:11px">복구자: '+l.restorer+'</span>':''}</td>
+    <td style="text-align:right">${priceCell}</td>
+    <td style="text-align:center"><strong style="color:${isC?'var(--gold)':isR?'var(--amber)':'var(--green)'}">${l.after}회</strong></td></tr>`;
+  }).join('')||'<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">거래 내역 없음</td></tr>';
+}
+
+function exportHistoryExcel(){
+  const logs=[...DB.logs].reverse();
+  const rows=[['일시','회원이름','전화번호','유형','카드ID','내용','결제금액(원)','발급자/복구자','메모','잔여회차']];
+  logs.forEach(l=>{
+    const m=gm(l.mid);
+    const isC=l.type==='charge';const isR=l.type==='restore';
+    const typeLabel=isC?'충전':isR?'복구':'사용';
+    const contentLabel=isC?'+'+l.amt+'회권':isR?'1회 복구':'1회 사용';
+    const price=isC?getPrice(l.amt):0;
+    const staff=isC?(l.issuer||''):isR?(l.restorer||''):'';
+    rows.push([
+      l.date,
+      m?.name||'?',
+      m?.phone||'',
+      typeLabel,
+      l.cid,
+      contentLabel,
+      price>0?price:'',
+      staff,
+      l.note||'',
+      l.after
+    ]);
+  });
+
+  // 합계 행 추가
+  const totalSales=DB.logs.filter(l=>l.type==='charge').reduce((s,l)=>s+getPrice(l.amt),0);
+  rows.push([]);
+  rows.push(['합계','','','충전 '+DB.logs.filter(l=>l.type==='charge').length+'건 / 사용 '+DB.logs.filter(l=>l.type==='use').length+'회','','','총 매출: '+totalSales.toLocaleString('ko-KR')+'원','','','']);
+
+  const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const bom='\uFEFF';
+  const blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='아늑료칸_안산역점_거래내역_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('거래 내역이 다운로드 되었습니다.');
+}
+
+// ── CUSTOMER PANELS ──
+function showCustPanel(name,btn){
+  document.querySelectorAll('#app-customer .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cp-'+name).classList.add('active');
+  document.querySelectorAll('#app-customer .nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const titles={home:'내 이용권',history:'사용 내역',profile:'내 정보'};
+  document.getElementById('cust-page-title').textContent=titles[name]||'';
+  if(name==='home')renderCustHome();
+  if(name==='history')renderCustHistory();
+  if(name==='profile')renderCustProfile();
+}
+
+function renderCustHome(){
+  const m=gm(currentCustId);const allCards=gmCards(currentCustId);const rem=totalRem(currentCustId);
+  document.getElementById('cust-header').innerHTML=`
+    <div class="avatar">${m.name[0]}</div>
+    <div>
+      <div class="cust-name">${m.name} 님, 환영합니다</div>
+      <div class="cust-meta">${m.phone}${m.birth?' · '+fmtDate(m.birth):''}· ${allCards.length}장 보유</div>
+      <div style="margin-top:8px;"><span style="background:rgba(255,255,255,0.2);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;">총 ${rem}회 사용 가능</span></div>
+    </div>`;
+  const grid=document.getElementById('cust-pass-grid');
+  if(!allCards.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🎫</div><div class="empty-msg">보유 이용권이 없습니다<br><span style="font-size:12px">현장에서 구매 후 이용해 주세요</span></div></div>`;}
+  else grid.innerHTML=allCards.map((c,i)=>{
+    const pct=c.rem/c.total*100;const ex=c.rem===0;
+    const pips=Array.from({length:c.total}).map((_,j)=>`<div class="pip ${j<c.total-c.rem?'used':''}"></div>`).join('');
+    return `<div class="pass-card ${ex?'exhausted':''}" style="background:${CG[i%4]}">
+      <div class="pass-card-header"><div class="pass-card-type" style="color:${CA[i%4]}">${c.type}회권</div><div class="pass-card-id" style="color:rgba(255,255,255,0.4)">${c.id}</div></div>
+      <div class="pass-card-amount">${c.rem}<span>/ ${c.total}</span></div>
+      <div class="pass-progress"><div class="pass-progress-fill" style="width:${pct}%"></div></div>
+      <div class="pass-card-footer"><div class="pass-pips">${pips}</div>
+      <div class="pass-card-date" style="color:rgba(255,255,255,0.5)">발급 ${c.issued}<br>${ex?'<span style="color:rgba(255,120,100,0.9)">소진</span>':''}</div></div></div>`;
+  }).join('');
+  const myLogs=DB.logs.filter(l=>l.mid===currentCustId).reverse().slice(0,5);
+  const el=document.getElementById('cust-recent');
+  el.innerHTML=myLogs.map(l=>{const isC=l.type==='charge';return`<div class="tl-item">
+    <div class="tl-dot ${isC?'charge':'use'}"></div>
+    <div class="tl-content"><div class="tl-main">${isC?'<span style="color:var(--gold)">+'+l.amt+'회 충전</span>':'<span style="color:var(--green)">1회 이용</span>'}</div>
+    <div class="tl-sub">${l.cid}</div></div>
+    <div class="tl-right">${l.date}<br>잔여 ${l.after}회</div></div>`;}).join('')||'<div class="empty-state"><div class="empty-msg">이용 기록 없음</div></div>';
+}
+
+function renderCustHistory(){
+  const myLogs=DB.logs.filter(l=>l.mid===currentCustId).reverse();
+  const tbody=document.getElementById('cust-hist-tbody');
+  tbody.innerHTML=myLogs.map(l=>{const isC=l.type==='charge';return`<tr>
+    <td style="font-size:12px;color:var(--text-muted)">${l.date}</td>
+    <td><span class="badge ${isC?'gold':l.type==='restore'?'amber':'green'}">${isC?'충전':l.type==='restore'?'복구':'사용'}</span></td>
+    <td style="color:var(--text-muted)">${l.cid} <span class="chip chip-${gc(l.cid)?.type||5}">${gc(l.cid)?.type||5}회권</span></td>
+    <td>${isC?'+'+l.amt+'회 충전':'1회 이용'}</td>
+    <td><strong style="color:${isC?'var(--gold)':'var(--green)'}">${l.after}회</strong></td></tr>`;}).join('')||'<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted)">이용 내역 없음</td></tr>';
+}
+
+function renderCustProfile(){
+  const m=gm(currentCustId);
+  function infoRow(label,val){return`<div style="padding:14px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">${label}</div><div style="font-size:15px;font-weight:600">${val}</div></div>`;}
+  document.getElementById('cust-profile-box').innerHTML=`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <div class="avatar" style="background:var(--accent);color:#fff;">${m.name[0]}</div>
+      <div><div style="font-size:18px;font-weight:700">${m.name}</div><div style="font-size:13px;color:var(--text-muted);margin-top:2px">${m.phone}</div></div>
+    </div>
+    <div style="display:grid;gap:12px;">
+      ${infoRow('이름',m.name)}
+      ${infoRow('전화번호',m.phone)}
+      ${infoRow('생년월일',m.birth?fmtDate(m.birth):'-')}
+      ${infoRow('가입일',m.joinDate)}
+      ${infoRow('총 잔여 회차','<span style="font-size:22px;font-weight:700;color:var(--accent)">'+totalRem(m.id)+'회</span>')}
+      <div style="margin-top:4px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">알림 및 수신 설정</div>
+        <div class="toggle-wrap">
+          <div class="toggle-label-group">
+            <div class="toggle-main">마케팅 정보 수신</div>
+            <div class="toggle-sub">이벤트·프로모션·쿠폰 SMS 안내</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="profile-mkt-toggle" ${m.marketing?'checked':''} onchange="toggleMarketing(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px;padding:0 2px;">동의 철회 시 이벤트·프로모션 안내가 제한될 수 있습니다.</div>
+      </div>
+    </div>`;
+}
+function toggleMarketing(val){
+  const m=gm(currentCustId);
+  if(m){m.marketing=val;toast(val?'마케팅 수신 동의가 설정되었습니다.':'마케팅 수신 동의가 해제되었습니다.',val?'var(--green)':'var(--amber)');}
+}
+function exportExcel(){
+  const rows=[['이름','전화번호','생년월일','마케팅수신동의','보유카드수','잔여회차','가입일']];
+  DB.members.forEach(m=>{
+    rows.push([m.name,m.phone,m.birth||'',m.marketing?'동의':'미동의',gmCards(m.id).length,totalRem(m.id),m.joinDate]);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const bom='\uFEFF';
+  const blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  a.download='아늑료칸_회원목록_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+  toast('회원 목록이 다운로드 되었습니다.');
+}
+
+// ── ADMIN LOGIN ──
+const ADMIN_PW = '03269';
+function openAdminLogin(){
+  document.getElementById('admin-login-screen').classList.add('open');
+  document.getElementById('admin-pw-input').value='';
+  document.getElementById('admin-pw-err').style.display='none';
+  setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
+}
+function closeAdminLogin(){
+  document.getElementById('admin-login-screen').classList.remove('open');
+}
+function doAdminLogin(){
+  const pw=document.getElementById('admin-pw-input').value;
+  if(pw===ADMIN_PW){
+    closeAdminLogin();
+    hide('auth-screen');show('app-admin');
+    renderDashboard();renderMemberSelect();
+  } else {
+    document.getElementById('admin-pw-err').style.display='block';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+
+// ── ISSUER CHECK ──
+function chkIssuer(){
+  const v=document.getElementById('chg-issuer').value.trim();
+  const btn=document.getElementById('btn-charge');
+  const hint=document.getElementById('h-issuer');
+  if(!v){
+    hint.textContent='발급자 이름을 입력해야 발행됩니다';
+    hint.className='form-hint muted';
+    if(btn)btn.disabled=true;
+  } else {
+    hint.textContent='✓ '+v;
+    hint.className='form-hint ok';
+    if(btn)btn.disabled=false;
+  }
+}
+
+
+// ── 1회차 복구 ──
+function openRestoreModal(){
+  const mid=parseInt(document.getElementById('ded-member-id').value||'0');
+  // 회원 미선택 시 안내
+  const infoEl=document.getElementById('restore-member-info');
+  if(!mid){
+    infoEl.innerHTML='<span style="color:var(--red);font-size:13px;">⚠️ 차감 패널에서 회원을 먼저 검색·선택해 주세요</span>';
+  } else {
+    const m=gm(mid);
+    const active=gmActive(mid);
+    const rem=totalRem(mid);
+    infoEl.innerHTML=`
+      <div style="font-weight:600;font-size:14px;color:var(--text);margin-bottom:4px;">${m.name} 님</div>
+      <div style="font-size:12px;color:var(--text-muted);">${m.phone} · 현재 잔여 <strong style="color:var(--accent)">${rem}회</strong> (활성 카드 ${active.length}장)</div>
+      ${active.length?'<div style="font-size:11px;color:var(--text-dim);margin-top:4px;">복구 대상 카드: '+active[0].id+' ('+active[0].rem+'/'+active[0].total+'회)</div>':'<div style="font-size:12px;color:var(--red);margin-top:4px;">⚠️ 복구할 수 있는 활성 카드가 없습니다</div>'}`;
+  }
+  // 폼 초기화
+  document.getElementById('restore-name').value='';
+  document.getElementById('restore-pw').value='';
+  document.getElementById('restore-reason').value='';
+  document.getElementById('h-restore-name').textContent='복구를 진행하는 담당자 이름을 입력하세요';
+  document.getElementById('h-restore-name').className='form-hint muted';
+  document.getElementById('h-restore-pw').style.display='none';
+  document.getElementById('restore-pw-verified').style.display='none';
+  const btn=document.getElementById('btn-do-restore');
+  btn.style.opacity='0.4';btn.style.pointerEvents='none';
+  openModal('modal-restore');
+  setTimeout(()=>document.getElementById('restore-name').focus(),150);
+}
+
+function chkRestoreReady(){
+  const name=document.getElementById('restore-name').value.trim();
+  const pw=document.getElementById('restore-pw').value;
+  const pwOk=pw===ADMIN_PW;
+  const nameOk=name.length>=1;
+
+  // name hint
+  const nh=document.getElementById('h-restore-name');
+  if(!name){nh.textContent='복구를 진행하는 담당자 이름을 입력하세요';nh.className='form-hint muted';}
+  else{nh.textContent='✓ '+name;nh.className='form-hint ok';}
+
+  // pw hint
+  const pwErr=document.getElementById('h-restore-pw');
+  const pwOkBadge=document.getElementById('restore-pw-verified');
+  if(!pw){pwErr.style.display='none';pwOkBadge.style.display='none';}
+  else if(pwOk){pwErr.style.display='none';pwOkBadge.style.display='inline-flex';}
+  else{pwErr.style.display='block';pwOkBadge.style.display='none';}
+
+  // button
+  const btn=document.getElementById('btn-do-restore');
+  const ready=nameOk&&pwOk;
+  btn.style.opacity=ready?'1':'0.4';
+  btn.style.pointerEvents=ready?'auto':'none';
+}
+
+function doRestore(){
+  const mid=parseInt(document.getElementById('ded-member-id').value||'0');
+  const restoreName=document.getElementById('restore-name').value.trim();
+  const pw=document.getElementById('restore-pw').value;
+  const reason=document.getElementById('restore-reason').value.trim();
+
+  if(!restoreName){toast('복구자 이름을 입력해 주세요','var(--red)');return;}
+  if(pw!==ADMIN_PW){toast('관리자 비밀번호가 올바르지 않습니다','var(--red)');return;}
+  if(!mid){toast('차감 패널에서 회원을 먼저 선택해 주세요','var(--red)');return;}
+
+  const active=gmActive(mid);
+  if(!active.length){
+    // 소진 카드 중 가장 최근 것 복구
+    const exhausted=gmCards(mid).filter(c=>c.status==='exhausted');
+    if(!exhausted.length){toast('복구할 수 있는 카드가 없습니다','var(--red)');return;}
+    const card=exhausted[exhausted.length-1];
+    card.rem=1;card.status='active';
+    const m=gm(mid);
+    const restoreAt=nowStr();
+    DB.logs.push({id:DB.nextLid++,type:'restore',mid,cid:card.id,
+      note:reason||'실수 차감 복구',amt:1,date:restoreAt,after:card.rem,restorer:restoreName});
+    closeModal('modal-restore');
+    previewDeduct();
+  renderDedTimeline(mid);
+  renderDashboard();
+    toast('↩️ '+m.name+' 님 1회 복구 완료 ('+card.id+') — 복구자: '+restoreName,'var(--amber)');
+    return;
+  }
+
+  // 활성 카드 가장 최근 것(마지막 발급)에 1회 복구
+  const card=active[active.length-1];
+  if(card.rem>=card.total){toast('이 카드는 이미 최대 회차입니다. 차감 내역을 확인해 주세요','var(--amber)');return;}
+  card.rem+=1;card.status='active';
+  const m=gm(mid);
+  const restoreAt=nowStr();
+  DB.logs.push({id:DB.nextLid++,type:'restore',mid,cid:card.id,
+    note:reason||'실수 차감 복구',amt:1,date:restoreAt,after:card.rem,restorer:restoreName});
+  closeModal('modal-restore');
+  previewDeduct();
+  renderDedTimeline(mid);
+  renderDashboard();
+  toast('↩️ '+m.name+' 님 1회 복구 완료 ('+card.id+' : '+card.rem+'회) — 복구자: '+restoreName,'var(--amber)');
+}
+
+</script>
+
+<!-- ══ ADMIN LOGIN OVERLAY ══ -->
+<div class="admin-login-screen" id="admin-login-screen">
+  <div class="admin-login-card">
+    <div class="admin-login-logo">
+      <div class="admin-login-logo-text">아늑료칸<br>안산역점</div>
+      <div class="admin-login-logo-sub">루프사우나</div>
+      <div class="admin-tag">관리자 전용</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">관리자 비밀번호</label>
+      <div class="pw-wrap">
+        <input class="form-input" id="admin-pw-input" type="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doAdminLogin()">
+        <button class="pw-eye" onclick="togglePw('admin-pw-input',this)" tabindex="-1">👁</button>
+      </div>
+      <div class="form-hint err" id="admin-pw-err" style="display:none;">비밀번호가 올바르지 않습니다.</div>
+    </div>
+    <button class="btn btn-primary" onclick="doAdminLogin()" style="margin-top:4px;">관리자 로그인</button>
+    <button class="btn btn-outline" onclick="closeAdminLogin()">취소</button>
+  </div>
+</div>
+
+</body>
+</html>
